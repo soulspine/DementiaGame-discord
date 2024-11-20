@@ -1,0 +1,6 @@
+{
+    "cancelField": "Cancel reason",
+    "cancelReasons":{
+        "byHost": "Game canceled by host"
+    }
+}

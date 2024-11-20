@@ -1,0 +1,14 @@
+{
+    "title": "Dementia Game",
+    "description": "Created by [soulspine](https://www.github.com/soulspine).",
+    "fields":[
+        {
+            "name": "Description",
+            "value": "You are at a meeting of people with dementia. You forget who/what you are and your rehabilitation task is to play guessing your identity by asking questions. The game takes place in rounds, in which you can ask one question or guess who you are. If you guess correctly, you move on to the winners, if not, the round ends and the next patient asks a question or guesses. You try to cope with gradual memory loss, so in each round you can take notes with a question and answer. The game ends when everyone guesses who they are, the set limit of winners is reached or the majority of patients agree to it."
+            },
+        {
+            "name": "Game modes",
+            "value": "At the moment there are 3 game modes available:\n- **Miraculous Healing** (the effects of dementia completely cease)\n- **Mild Amnesia** (Occasionally you forget your questions and/or answers)\n- **Deep Dementia** (As the game progresses, you start to forget about the questions and/or answers asked, you twist the answers and sometimes even think that other players' questions are yours)"
+}
+    ]
+}

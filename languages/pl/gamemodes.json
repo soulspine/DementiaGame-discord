@@ -1,0 +1,23 @@
+{
+    "healing": {
+        "display": "Cudowne Uzdrowienie",
+        "description": {
+            "short": "Efekty demencji całkowicie ustają",
+            "long": "Wszystkie efekty demencji są wyłączone. Gracze nie zapominają swoich pytań i odpowiedzi."
+        }
+    },
+    "amnesia": {
+        "display": "Lekka Amnezja",
+        "description": {
+            "short": "Okazjonalnie zapominasz swoje pytania i/lub odpowiedzi",
+            "long": "W ciągu gry może zdarzyć się, że twoje notataki zaczną zanikać w wyniku amnezji. Ten stan utrzymuje się tylko do końca rundy. W miarę trwania rozgrywki, szansa na wystąpienie tej anomalii i jej skala się zwiększają."
+        }
+    },
+    "dementia": {
+        "display": "Głęboka Demencja",
+        "description": {
+            "short": "Zapominasz o zadanych pytaniach i/lub odpowiedziach, przekręcasz odpowiedzi i czasem nawet mieszasz pytania innych pacjentów z własnymi",
+            "long": "W miarę trwania rozgrywki, gracze zaczynają zapominać o swoich pytaniach i odpowiedziach. W wyniku demencji, gracze mogą przekręcać odpowiedzi, a nawet uważać, że pytania innych graczy są ich własnymi. W miarę trwania rozgrywki, szansa na wystąpienie tej anomalii i jej skala się zwiększają."
+        }
+    }
+}

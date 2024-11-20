@@ -1,0 +1,49 @@
+{
+    "modeSelect": "Select game mode",
+    "title": "Dementia",
+    "fields":{
+        "host": "Host",
+        "channel": "Channel",
+        "players": "Players",
+        "status": "Status",
+        "settings": "Settings",
+        "gamemode": "Game mode"
+    },
+    "status":{
+        "waiting": "Waiting for players",
+        "playing": "Game in progress",
+        "finished": "Finished"
+    },
+    "buttons":{
+        "join": "Join",
+        "leave": "Leave",
+        "start": "Start",
+        "settings": "Settings",
+        "language": "Select language"
+    },
+    "settings":{
+        "maxGuesses": "To `{}` correct answers",
+        "maxGuesses0": "Until everyone guesses",
+        "timeLimit": "`{}` seconds per round",
+        "timeLimit0": "No time limit",
+        "category": "Category: `{}`",
+        "category0": "No category"
+    },
+    "modal":{
+        "title": "Game settings",
+        "fields":{
+            "maxGuesses":{
+                "label": "Number of winners before game ends",
+                "placeholder": "Leave blank to play until everyone guesses"
+            },
+            "timeLimit":{
+                "label": "Time to answer in seconds",
+                "placeholder": "Leave blank to play without time limit"
+            },
+            "category":{
+                "label": "Category",
+                "placeholder": "Leave blank to play without a category"
+            }
+        }
+    }
+}

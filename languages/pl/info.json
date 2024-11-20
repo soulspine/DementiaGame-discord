@@ -1,0 +1,14 @@
+{
+    "title": "Gra w demencję",
+    "description": "Stworzona przez [soulspine](https://www.github.com/soulspine).",
+    "fields":[
+        {
+            "name": "Opis",
+            "value": "Jesteście na spotkaniu osób chorych na demencję. Zapomicie kim/czym jesteście i waszym zadaniem rehabilitacyjnym jest gra w zgadywanie swojej tożsamości poprzez zadawanie pytań. Rozgrywka odbywa się w rundach, w których po kolei możecie zadać jedno pytanie lub zgadnąć kim jesteście. Jeśli zganiecie poprawnie, przechodzicie do grona zwycięzców, jeśli nie, runda się kończy i następny pacjent zadaje pytanie lub zgaduje. Próbujecie jakoś radzić sobie ze stopniowymi zanikami pamięci, więc w każdej rundzie możecie zrobić notatkę z pytaniem i odpowiedzią. Gra kończy się, gdy wszyscy odgadną kim są, osiągnięty zostanie ustalony z góry limit zwycięzców lub demokratycznie większość pacjentów się na to zgodzi."
+        },
+        {
+            "name": "Tryby gry",
+            "value": "Na ten moment dostępne są 3 tryby gry:\n- **Cudowne Uzdrowienie** (efekty demencji całkowicie ustają)\n- **Lekka Amnezja** (Okazjonalnie zapominasz swoje pytania i/lub odpowiedzi)\n- **Głęboka Demencja** (W miarę trwania gry, zaczynasz zapominać o zadanych pytaniach i/lub odpowiedziach, przekręcasz odpowiedzi i czasem nawet uważasz, że pytania innych graczy są twoimi)"
+        }
+    ]
+}

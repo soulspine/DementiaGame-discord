@@ -1,0 +1,23 @@
+{
+    "healing": {
+        "display": "Miraculous Healing",
+        "description": {
+            "short": "All dementia effects completely cease",
+            "long": "All dementia effects are disabled. Players do not forget their questions and answers."
+        }
+    },
+    "amnesia": {
+        "display": "Mild Amnesia",
+        "description": {
+            "short": "Occasionally forget your questions and/or answers",
+            "long": "During the game, it may happen that your notes start to fade due to amnesia. This condition lasts only until the end of the round. As the game progresses, the chance of this anomaly occurring and its scale increases."
+        }
+    },
+    "dementia": {
+        "display": "Deep Dementia",
+        "description": {
+            "short": "Forget asked questions and/or answers, distort answers, and sometimes even mix other patients' questions with your own",
+            "long": "As the game progresses, players begin to forget their questions and answers. Due to dementia, players may distort answers and even think that other players' questions are their own. As the game progresses, the chance of this anomaly occurring and its scale increases."
+        }
+    }
+}

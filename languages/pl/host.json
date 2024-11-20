@@ -1,0 +1,49 @@
+{
+    "modeSelect": "Wybierz tryb gry",
+    "title": "Demencja",
+    "fields":{
+        "host": "Gospodarz",
+        "channel": "Kanał",
+        "players": "Gracze",
+        "status": "Status",
+        "settings": "Ustawienia",
+        "gamemode": "Tryb gry"
+    },
+    "status":{
+        "waiting": "Oczekiwanie na graczy",
+        "playing": "Gra w trakcie",
+        "finished": "Zakończono"
+    },
+    "buttons":{
+        "join": "Dołącz",
+        "leave": "Opuść",
+        "start": "Rozpocznij",
+        "settings": "Ustawienia",
+        "language": "Wybierz język"
+    },
+    "settings":{
+        "maxGuesses": "Do `{}` poprawnych odpowiedzi",
+        "maxGuesses0": "Aż wszyscy zgadną",
+        "timeLimit": "`{}` sekund na rundę",
+        "timeLimit0": "Bez limitu czasu",
+        "category": "Kategoria: `{}`",
+        "category0": "Bez kategorii"
+    },
+    "modal":{
+        "title": "Ustawienia gry",
+        "fields":{
+            "maxGuesses":{
+                "label": "Liczba zwycięzców przed zakończeniem gry",
+                "placeholder": "Zostaw puste aby grać aż wszyscy zgadną"
+            },
+            "timeLimit":{
+                "label": "Czas na odpowiedź w sekundach",
+                "placeholder": "Zostaw puste aby grać bez limitu czasu"
+            },
+            "category":{
+                "label": "Kategoria",
+                "placeholder": "Zostaw puste aby grać bez kategorii"
+            }
+        }
+    }
+}
