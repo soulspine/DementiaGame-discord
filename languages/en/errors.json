@@ -1,0 +1,7 @@
+{
+    "noVoice": "You have to be in a voice channel to do that.",
+    "wrongVoice": "You must be in the same voice channel as the game.",
+    "gameOngoing": "There is already a game ongoing in this voice channel.",
+    "noGame": "There is no game ongoing in this voice channel right now.",
+    "notHost": "Only the host can do that."
+}
