@@ -7,7 +7,8 @@
         "players": "Gracze",
         "status": "Status",
         "settings": "Ustawienia",
-        "gamemode": "Tryb gry"
+        "gamemode": "Tryb gry",
+        "timeout": "Poczekalnia ważna do"
     },
     "status":{
         "waiting": "Oczekiwanie na graczy",
@@ -19,7 +20,9 @@
         "leave": "Opuść",
         "start": "Rozpocznij",
         "settings": "Ustawienia",
-        "language": "Wybierz język"
+        "language": "Wybierz język",
+        "ready": "Gotowość",
+        "openGame": "Otwórz mój widok gry"
     },
     "settings":{
         "maxGuesses": "Do `{}` poprawnych odpowiedzi",

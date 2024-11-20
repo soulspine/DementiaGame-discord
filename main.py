@@ -6,6 +6,8 @@ from modal import *
 from game import *
 import error
 import language
+import asyncio
+import datetime
 
 if __name__ != "__main__": exit()
 
@@ -31,13 +33,13 @@ async def host(interaction:discord.Interaction, language_code:str=language.defau
     
     initialUserId = interaction.user.id
 
-    langHost = language.getModule("host", language_code)
+    langLobby = language.getModule("lobby", language_code)
     langGamemodes = language.getModule("gamemodes", language_code)
 
     modeSelectEmbed = discord.Embed(color=discord.Color.from_rgb(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
     modeSelectView = ui.View()
 
-    modeSelect = ui.Select(placeholder=langHost["modeSelect"], custom_id="modeSelect")
+    modeSelect = ui.Select(placeholder=langLobby["modeSelect"], custom_id="modeSelect")
     async def modeSelect_callback(interaction:discord.Interaction):
         if interaction.user.id != initialUserId: await error.notHost(interaction, language_code); return
         if (interaction.user.voice is None): await error.noVoice(interaction, language_code); return
@@ -46,10 +48,10 @@ async def host(interaction:discord.Interaction, language_code:str=language.defau
                 await error.gameOngoing(interaction, language_code); return
         
         gameId:int = interaction.user.voice.channel.id
-        GAMES[gameId] = Game(hostId=interaction.user.id, id=gameId, gamemode=interaction.data["values"][0], languageCode=language_code)
+        GAMES[gameId] = Game(hostId=interaction.user.id, id=gameId, gamemode=interaction.data["values"][0], languageCode=language_code, vc=interaction.user.voice.channel, msg=interaction.message)
 
-        embed = GAMES[gameId].hostEmbed()
-        view = GAMES[gameId].hostView()
+        embed = GAMES[gameId].lobbyEmbed()
+        view = GAMES[gameId].lobbyView()
 
         await interaction.response.edit_message(embed=embed, view=view)
 
@@ -95,4 +97,20 @@ async def info(interaction:discord.Interaction):
 
     await interaction.response.send_message(embed=getEmbed(language.defaultCode), view=getView(language.defaultCode))
 
-client.run(token)
+async def backgroundCleaner():
+    await client.wait_until_ready()
+    checkTime = 3  # seconds
+    while not client.is_closed():
+        #print("Checking games...")
+        for gameId, game in list(GAMES.items()):
+            #print(game.timeout, datetime.datetime.now())
+            if game.timeout < datetime.datetime.now():
+                await game.cancel("timeout")
+                print(f"Game {gameId} timed out.")
+        await asyncio.sleep(checkTime)
+
+async def main():
+    asyncio.create_task(backgroundCleaner())
+    await client.start(token)
+
+asyncio.run(main())

@@ -3,5 +3,6 @@
     "wrongVoice": "Musisz być na tym samym kanale głosowym co gra.",
     "gameOngoing": "Na tym kanale głosowym jest już aktywna gra.",
     "noGame": "Na tym kanale głosowym nie ma aktywnej gry.",
-    "notHost": "Tylko host może to zrobić."
+    "notHost": "Tylko host może to zrobić.",
+    "notInGame": "Nie jesteś w tej grze."
 }

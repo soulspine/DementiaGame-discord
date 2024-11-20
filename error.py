@@ -18,3 +18,6 @@ async def noGame(interaction: discord.Interaction, languageCode: str):
 
 async def notHost(interaction: discord.Interaction, languageCode: str):
     return await send(interaction, "notHost", languageCode)
+
+async def notInGame(interaction: discord.Interaction, languageCode: str):
+    return await send(interaction, "notInGame", languageCode)

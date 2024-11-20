@@ -1,6 +1,7 @@
 {
     "cancelField": "Cancel reason",
     "cancelReasons":{
-        "byHost": "Game canceled by host"
+        "byHost": "Game canceled by host",
+        "timeout": "Game canceled due to inactivity"
     }
 }

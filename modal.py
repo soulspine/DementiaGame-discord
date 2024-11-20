@@ -1,5 +1,6 @@
 import discord
 from game import Game, GAMES
+import datetime
 
 class SettingsModal(discord.ui.Modal):
     game:Game
@@ -19,6 +20,7 @@ class SettingsModal(discord.ui.Modal):
 
     async def on_submit(self, interaction:discord.Interaction):
         try:
+            if datetime.datetime.now() > self.game.timeout: await interaction.response.defer(); return
             maxGuesses = int(self.maxGuesses.value) if self.maxGuesses.value != "" else 0
             timeLimit = int(self.timeLimit.value) if self.timeLimit.value != "" else 0
             category = self.category.value
@@ -29,7 +31,7 @@ class SettingsModal(discord.ui.Modal):
             self.game.settings["maxGuesses"] = maxGuesses if maxGuesses < self.game.playerCount else 0
             self.game.settings["timeLimit"] = timeLimit
             self.game.settings["category"] = None if category == "0" else category
-            await interaction.response.edit_message(embed=self.game.hostEmbed())
+            await interaction.response.edit_message(embed=self.game.lobbyEmbed())
         except ValueError:
             await interaction.response.send_message("Invalid input.", ephemeral=True)
             return

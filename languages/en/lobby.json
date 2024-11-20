@@ -7,7 +7,8 @@
         "players": "Players",
         "status": "Status",
         "settings": "Settings",
-        "gamemode": "Game mode"
+        "gamemode": "Game mode",
+        "timeout": "Lobby valid until"
     },
     "status":{
         "waiting": "Waiting for players",
@@ -19,7 +20,9 @@
         "leave": "Leave",
         "start": "Start",
         "settings": "Settings",
-        "language": "Select language"
+        "language": "Select language",
+        "ready": "Ready",
+        "openGame": "Open my game view"
     },
     "settings":{
         "maxGuesses": "To `{}` correct answers",
