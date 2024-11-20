@@ -1,6 +1,7 @@
 import discord
 import discord.ext.commands as commands
 import discord.ui as ui
+from discord import app_commands
 from modal import *
 from game import *
 import error
@@ -19,12 +20,13 @@ async def on_ready():
     print(f'Logged in as {client.user.name}.')
     await client.tree.sync()
 
-@client.tree.command(name="host", description="Host a game of Dementia.")
+@app_commands.describe(language_code=f"Valid codes: {' | '.join([f'{key}' for key in language.getCodes().keys()])}")
+@client.tree.command(name="host", description="Host a game.")
 async def host(interaction:discord.Interaction, language_code:str=language.defaultCode):
     print(f"host accessed by {interaction.user.name}")
 
     if language_code not in language.getCodes().keys():
-        await interaction.response.send_message(content=f"Invalid language code. Valid codes: {', '.join([f"`{key}`" for key in language.getCodes().keys()])}", ephemeral=True)
+        await interaction.response.send_message(content=f"Invalid language code. Valid codes: {' | '.join([f"{key}" for key in language.getCodes().keys()])}", ephemeral=True)
         return
     
     initialUserId = interaction.user.id
@@ -66,9 +68,31 @@ async def host(interaction:discord.Interaction, language_code:str=language.defau
 @client.tree.command(name="info", description="Info about the game.")
 async def info(interaction:discord.Interaction):
     print(f"info accessed by {interaction.user.name}")
-    lang = language.getModule("info", "pl")
-    embed = discord.Embed(title=lang["title"], description=lang["description"], color=discord.Color.blurple())
-    for field in lang["fields"]: embed.add_field(name=field["name"], value=field["value"], inline=False)
-    await interaction.response.send_message(embed=embed)
+
+    initialUserId = interaction.user.id
+    langCodes = language.getCodes()
+
+    def getEmbed(languageCode:str):
+        langInfo = language.getModule("info", languageCode)
+        embed = discord.Embed(title=langInfo["title"], description=langInfo["description"], color=discord.Color.blurple())
+        for field in langInfo["fields"]: embed.add_field(name=field["name"], value=field["value"], inline=False)
+        return embed
+
+    def getView(languageCode:str):
+        langInfo = language.getModule("info", languageCode)
+        view = ui.View()
+
+        languageSelect = ui.Select(placeholder=langInfo["language"], custom_id="languageSelect")
+        for code in langCodes[languageCode]: languageSelect.add_option(label=langCodes[languageCode][code], value=code)
+        async def languageSelect_callback(interaction:discord.Interaction):
+            if interaction.user.id != initialUserId: await interaction.response.defer(); return
+            languageCode = interaction.data["values"][0]
+            await interaction.response.edit_message(view=getView(languageCode), embed=getEmbed(languageCode))
+
+        languageSelect.callback = languageSelect_callback
+        view.add_item(languageSelect)
+        return view
+
+    await interaction.response.send_message(embed=getEmbed(language.defaultCode), view=getView(language.defaultCode))
 
 client.run(token)
