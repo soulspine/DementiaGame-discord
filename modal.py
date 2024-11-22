@@ -47,13 +47,11 @@ class AssignmentModal(discord.ui.Modal):
     game:Game
     playerId:int
     targetPlayerId:int
-    targetPlayerName:str
 
     def __init__(self, game:Game, langModule:dict, playerId:int, targetPlayerId:int, targetPlayerName:str):
         self.game = game
         self.playerId = playerId
         self.targetPlayerId = targetPlayerId
-        self.targetPlayerName = targetPlayerName
 
         self.identity = discord.ui.TextInput(label=langModule["assigningPhase"]["modal"]["fields"]["identity"]["label"], placeholder=langModule["assigningPhase"]["modal"]["fields"]["identity"]["placeholder"].format(targetPlayerName), required=True, max_length=config.AssignmentModal.maxChars)
 
@@ -62,9 +60,14 @@ class AssignmentModal(discord.ui.Modal):
         self.add_item(self.identity)
 
     async def on_submit(self, interaction:discord.Interaction):
-        self.game.players[self.game.getPlayerIndex(self.targetPlayerId)].identity = self.identity.value
-        await interaction.response.send_message(embed=self.game.gameEmbed(), view=self.game.gameView(), ephemeral=True)
-    
+        self.game.players[self.targetPlayerId].identity = self.identity.value
+        if self.game.players[self.playerId].gameMsg is None:
+            await interaction.response.send_message(embed=self.game.gameEmbed(self.playerId), view=self.game.gameView(self.playerId), ephemeral=True)
+            self.game.players[self.playerId].gameMsg = await interaction.original_response()
+        else:
+            await interaction.response.defer()
+            self.game.updateGameMessage()
+
     async def on_error(self, interaction, error):
         return await super().on_error(interaction, error)
 

@@ -14,19 +14,21 @@ class Player:
     ready:bool
     identity:str
     targetId:int
+    gameMsg:discord.Message
 
     def __init__(self, id:int, ready:bool = False, identity:str = None):
         self.id = id
         self.ready = ready
         self.identity = identity
         self.targetId = None
+        self.gameMsg = None
 
     def __str__(self):
         return f"Player {self.id} - {self.ready} - {self.identity} - {self.targetId}"
 
 class Game:
     client:discord.Client
-    players: list[Player]
+    players: dict[int, Player]
     assignmentPairs: dict[str, str] # (playerId, targetPlayerId)
     id: int
     hostId: int
@@ -42,6 +44,7 @@ class Game:
     msg: discord.Message
     timeoutExtension: int
     timeout: datetime.datetime
+    roundOrder: list[int]
     emojis: dict = {
         "ready": "🟢",
         "notReady": "⭕",
@@ -51,9 +54,11 @@ class Game:
 
     def __init__(self, client, hostId:int, id:int, languageCode:str, gamemode:str, vc: discord.VoiceChannel, msg: discord.Message):
         self.client = client
-        self.players = [Player(hostId)]
+        self.players = {
+            hostId: Player(hostId, ready=False)
+        }
 
-        self.players.append(Player(1306987007779541002, ready=True)) # for testing, bot itself
+        #self.players[1306987007779541002] = Player(1306987007779541002, ready=True) # for testing, bot itself
 
         self.assignmentPairs = None
         self.id = id
@@ -67,25 +72,21 @@ class Game:
         }
         self.lobbyStatus = "waiting"
         self.gamePhase = None
-        self.playerCount = len(self.players)
-        self.readyCount = len([player for player in self.players if player.ready])
+        self.playerCount = len(self.players.keys())
+        self.readyCount = len([key for key in self.players if self.players[key].ready])
         self.winnerCount = 0
         self.vc = vc
         self.msg = msg
         self.timeoutExtension = 60
         self.timeout = None
-        
+        self.roundOrder = None
+
         self.extendTimeout()
         self.updateChannelStatus()
 
-    def getPlayerIndex(self, playerId:int) -> int:
-        for i, player in enumerate(self.players):
-            if player.id == playerId: return i
-        return -1
-
     def getPlayersString(self, withReady:bool=True) -> str:
         outStr:str = ""
-        for player in self.players:
+        for player in self.players.values():
             if withReady: outStr += f"{self.emojis["ready"] if player.ready else self.emojis["notReady"]} "
             outStr += f"<@{player.id}>\n"
         return outStr[:-1]
@@ -110,23 +111,22 @@ class Game:
         self.extendTimeout()
 
     def isPlayer(self, playerId:int) -> bool:
-        return playerId in [player.id for player in self.players]
+        return self.players.get(playerId) is not None
 
     def add_player(self, playerId:int):
-        self.players.append(Player(playerId))
+        self.players[playerId] = Player(playerId)
         self.playerCount += 1
         self.updateChannelStatus()
         self.extendTimeout()
 
     def remove_player(self, playerId:int):
-        self.players = [player for player in self.players if player.id != playerId]
+        self.players.pop(playerId)
         self.playerCount -= 1
         self.updateChannelStatus()
         self.extendTimeout()
 
     def setReady(self, playerId:int, ready:bool):
-        for player in self.players:
-            if player.id == playerId: player.ready = ready
+        self.players[playerId].ready = ready
         self.readyCount += 1 if ready else -1
         self.updateChannelStatus()
         self.extendTimeout()
@@ -136,19 +136,18 @@ class Game:
         self.gamePhase = "assigning"
         self.timeout = None
 
-        if self.playerCount == 2:
-            self.players[0].targetId = self.players[1].id
-            self.players[1].targetId = self.players[0].id
-        else:
-            players = [player.id for player in self.players]
-            targets = players.copy()
+        players = [player.id for player in self.players.values()]
+        targets = players.copy()
+        
+        while True:
+            random.shuffle(targets)
+            if all([player != target for player, target in zip(players, targets)]): break
+        
+        self.roundOrder = targets.copy()
 
-            while True:
-                random.shuffle(targets)
-                if all([player != target for player, target in zip(players, targets)]): break
-
-            for player, target in zip(players, targets):
-                self.players[self.getPlayerIndex(player)].targetId = target
+        for playerId, targetId in zip(players, targets):
+            self.players[playerId].targetId = targetId
+            self.players[playerId].ready = False
 
         self.updateChannelStatus()
 
@@ -270,7 +269,7 @@ class Game:
                     if (interaction.user.voice.channel.id not in GAMES): await error.noGame(interaction, self.languageCode); return
                     if (interaction.user.voice.channel.id != gameId): await error.wrongVoice(interaction, self.languageCode); return
 
-                    self.setReady(interaction.user.id, not self.players[self.getPlayerIndex(interaction.user.id)].ready)
+                    self.setReady(interaction.user.id, not self.players[interaction.user.id].ready)
                     await interaction.response.edit_message(embed=self.lobbyEmbed(), view=self.lobbyView())
 
                 readyButton.callback = ready_callback
@@ -305,17 +304,17 @@ class Game:
                     if (interaction.user.voice.channel.id not in GAMES): await error.noGame(interaction, self.languageCode); return
                     if (interaction.user.voice.channel.id != gameId): await error.wrongVoice(interaction, self.languageCode); return
 
-                    targetPlayerId = self.players[self.getPlayerIndex(interaction.user.id)].targetId
-                    unassignedPlayers = [player.id for player in self.players if player.identity is None]
+                    targetPlayerId = self.players[interaction.user.id].targetId
+                    unassignedPlayers = [player.id for player in self.players.values() if player.identity is None]
 
                     targetPlayerName:str = self.client.get_user(targetPlayerId).name
 
-                    print(unassignedPlayers)
-                
                     if targetPlayerId in unassignedPlayers:
                         await interaction.response.send_modal(modal.AssignmentModal(self, language.getModule("game", self.languageCode), interaction.user.id, targetPlayerId, targetPlayerName))
                     else:
-                        await interaction.response.send_message(embed=self.gameEmbed(), view=self.gameView(), ephemeral=True)
+                        await interaction.response.send_message(embed=self.gameEmbed(interaction.user.id), view=self.gameView(interaction.user.id), ephemeral=True)
+                        await self.players[interaction.user.id].gameMsg.delete()
+                        self.players[interaction.user.id].gameMsg = await interaction.original_response()
 
                 openButton.callback = open_callback
 
@@ -323,14 +322,82 @@ class Game:
 
         return view
 
-    def gameEmbed(self) -> discord.Embed:
-        embed = discord.Embed(title="Game")
-        for player in self.players:
-            embed.add_field(name=f"<@{player.id}>", value=f"Identity: {player.identity}\nTarget: <@{player.targetId}>", inline=False)
+    def gameEmbed(self, userId:int) -> discord.Embed:
+        langGame = language.getModule("game", self.languageCode)
+        
+        embed = discord.Embed()
+        
+        match self.gamePhase:
+            case "assigning":
+                embed.title = langGame["assigningPhase"]["title"]
+                embed.description = langGame["assigningPhase"]["description"].format(f"<@{self.players[userId].targetId}>")
+
+                playersMessage = ""
+
+                for playerId in self.roundOrder:
+                    player = self.players[playerId]
+                    playersMessage += f"{self.emojis['ready'] if player.ready else self.emojis['notReady']} <@{player.id}> - "
+                    playersMessage += "||???||" if player.id == userId or player.identity == None else player.identity
+                    playersMessage += "\n"
+
+                playersMessage = playersMessage[:-1]
+
+                embed.add_field(name=langGame["assigningPhase"]["fields"]["players"], value=playersMessage, inline=False)
+
         return embed
 
-    def gameView(self) -> ui.View:
-        return None
+    def gameView(self, userId:int) -> ui.View:
+        langGame = language.getModule("game", self.languageCode)
+        view = ui.View()
+        
+        match self.gamePhase:
+            case "assigning":
+                player = self.players[userId]
+                target = self.players[player.targetId]
+
+                style = discord.ButtonStyle.green if not player.ready else discord.ButtonStyle.red
+                label = langGame["assigningPhase"]["buttons"]["confirm"] if not player.ready else langGame["assigningPhase"]["buttons"]["cancel"]
+                customId = "confirm" if not player.ready else "cancel" 
+
+                confirmcancelButton = ui.Button(style=style, label=label, custom_id=f"{customId}")
+                async def confirmcancel_callback(interaction:discord.Interaction):
+                    if (interaction.user.voice is None): await error.noVoice(interaction, self.languageCode); return
+                    if (interaction.user.voice.channel.id not in GAMES): await error.noGame(interaction, self.languageCode); return
+                    if (interaction.user.voice.channel.id != self.id): await error.wrongVoice(interaction, self.languageCode); return
+
+                    await interaction.response.defer()
+
+                    ready = interaction.data["custom_id"] == "confirm"
+
+                    self.setReady(userId, ready)
+
+                    self.updateGameMessage()
+                confirmcancelButton.callback = confirmcancel_callback
+                view.add_item(confirmcancelButton)
+
+                changeButton = ui.Button(style=discord.ButtonStyle.blurple, label=langGame["assigningPhase"]["buttons"]["change"], custom_id="change")
+                async def change_callback(interaction:discord.Interaction):
+                    if (interaction.user.voice is None): await error.noVoice(interaction, self.languageCode); return
+                    if (interaction.user.voice.channel.id not in GAMES): await error.noGame(interaction, self.languageCode); return
+                    if (interaction.user.voice.channel.id != self.id): await error.wrongVoice(interaction, self.languageCode); return
+
+                    await interaction.response.send_modal(modal.AssignmentModal(self, langGame, userId, self.players[userId].targetId, self.client.get_user(self.players[userId].targetId).name))
+
+                changeButton.callback = change_callback
+                if player.ready: changeButton.disabled = True
+                view.add_item(changeButton)
+
+        return view
+
+    def updateGameMessage(self, userId:int = None):
+        if userId is not None:
+            player = self.players[userId]
+            if player.gameMsg is not None:
+                asyncio.create_task(player.gameMsg.edit(embed=self.gameEmbed(userId), view=self.gameView(userId)))
+        else:
+            for player in self.players.values():
+                if player.gameMsg is not None:
+                    asyncio.create_task(player.gameMsg.edit(embed=self.gameEmbed(player.id), view=self.gameView(player.id)))
 
     def cancelledEmbed(self, reason:str) -> discord.Embed:
         lang = language.getModule("postgame", self.languageCode)

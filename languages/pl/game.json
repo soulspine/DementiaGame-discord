@@ -1,5 +1,15 @@
 {
     "assigningPhase":{
+        "title": "Faza przypisywania",
+        "description": "Przypiszcie innym tożsamości. Ty decydujesz kim będzie **{}**",
+        "fields":{
+            "players": "Pacjenci"
+        },
+        "buttons":{
+            "confirm": "Potwierdź",
+            "cancel": "Anuluj",
+            "change": "Zmień"
+        },
         "modal":{
             "title":"Przypisanie tożsamości",
             "fields":{

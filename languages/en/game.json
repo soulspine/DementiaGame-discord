@@ -1,5 +1,15 @@
 {
     "assigningPhase":{
+        "title": "Assigning phase",
+        "description": "Assign identities to others. You decide who **{}** will be",
+        "fields":{
+            "players": "Patients"
+        },
+        "buttons":{
+            "confirm": "Confirm",
+            "cancel": "Cancel",
+            "change": "Change"
+        },
         "modal":{
             "title":"Identity assignment",
             "fields":{

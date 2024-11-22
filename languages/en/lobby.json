@@ -4,7 +4,7 @@
     "fields":{
         "host": "Host",
         "channel": "Channel",
-        "players": "Players",
+        "players": "Patients",
         "status": "Status",
         "settings": "Settings",
         "gamemode": "Game mode",

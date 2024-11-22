@@ -50,6 +50,7 @@ async def host(interaction:discord.Interaction, language_code:str=config.Languag
         gameId:int = interaction.user.voice.channel.id
         GAMES[gameId] = Game(client, hostId=interaction.user.id, id=gameId, gamemode=interaction.data["values"][0], languageCode=language_code, vc=interaction.user.voice.channel, msg=interaction.message)
 
+
         embed = GAMES[gameId].lobbyEmbed()
         view = GAMES[gameId].lobbyView()
 
@@ -112,4 +113,5 @@ async def main():
     asyncio.create_task(backgroundCleaner())
     await client.start(token)
 
+#client.run(token)
 asyncio.run(main())
