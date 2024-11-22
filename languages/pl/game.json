@@ -1,0 +1,13 @@
+{
+    "assigningPhase":{
+        "modal":{
+            "title":"Przypisanie tożsamości",
+            "fields":{
+                "identity":{
+                    "label": "Nowa tożsamość",
+                    "placeholder": "Kim ma być {}?"
+                }
+            }
+        }
+    }
+}

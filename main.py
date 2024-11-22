@@ -24,7 +24,7 @@ async def on_ready():
 
 @app_commands.describe(language_code=f"Valid codes: {' | '.join([f'{key}' for key in language.getCodes().keys()])}")
 @client.tree.command(name="host", description="Host a game.")
-async def host(interaction:discord.Interaction, language_code:str=language.defaultCode):
+async def host(interaction:discord.Interaction, language_code:str=config.Language.defaultCode):
     print(f"host accessed by {interaction.user.name}")
 
     if language_code not in language.getCodes().keys():
@@ -44,11 +44,11 @@ async def host(interaction:discord.Interaction, language_code:str=language.defau
         if interaction.user.id != initialUserId: await error.notHost(interaction, language_code); return
         if (interaction.user.voice is None): await error.noVoice(interaction, language_code); return
         elif (interaction.user.voice.channel.id in GAMES):
-            if GAMES[interaction.user.voice.channel.id].status == "playing" or GAMES[interaction.user.voice.channel.id].hostId in [member.id for member in interaction.user.voice.channel.members]:
+            if GAMES[interaction.user.voice.channel.id].lobbyStatus == "playing" or GAMES[interaction.user.voice.channel.id].hostId in [member.id for member in interaction.user.voice.channel.members]:
                 await error.gameOngoing(interaction, language_code); return
         
         gameId:int = interaction.user.voice.channel.id
-        GAMES[gameId] = Game(hostId=interaction.user.id, id=gameId, gamemode=interaction.data["values"][0], languageCode=language_code, vc=interaction.user.voice.channel, msg=interaction.message)
+        GAMES[gameId] = Game(client, hostId=interaction.user.id, id=gameId, gamemode=interaction.data["values"][0], languageCode=language_code, vc=interaction.user.voice.channel, msg=interaction.message)
 
         embed = GAMES[gameId].lobbyEmbed()
         view = GAMES[gameId].lobbyView()
@@ -95,19 +95,18 @@ async def info(interaction:discord.Interaction):
         view.add_item(languageSelect)
         return view
 
-    await interaction.response.send_message(embed=getEmbed(language.defaultCode), view=getView(language.defaultCode))
+    await interaction.response.send_message(embed=getEmbed(config.Language.defaultCode), view=getView(config.Language.defaultCode))
 
 async def backgroundCleaner():
     await client.wait_until_ready()
-    checkTime = 3  # seconds
+    sleepTime = config.BackgroundCleaner.sleepTime  # seconds
     while not client.is_closed():
-        #print("Checking games...")
         for gameId, game in list(GAMES.items()):
-            #print(game.timeout, datetime.datetime.now())
-            if game.timeout < datetime.datetime.now():
+            if game.timeout is None: continue
+            elif game.timeout.timestamp()-datetime.datetime.now().timestamp() < sleepTime:
                 await game.cancel("timeout")
                 print(f"Game {gameId} timed out.")
-        await asyncio.sleep(checkTime)
+        await asyncio.sleep(sleepTime)
 
 async def main():
     asyncio.create_task(backgroundCleaner())

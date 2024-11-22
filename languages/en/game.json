@@ -1,0 +1,13 @@
+{
+    "assigningPhase":{
+        "modal":{
+            "title":"Identity assignment",
+            "fields":{
+                "identity":{
+                    "label": "New identity",
+                    "placeholder": "Who should {} be?"
+                }
+            }
+        }
+    }
+}

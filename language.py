@@ -1,8 +1,6 @@
 import json
 import os
 
-defaultCode = "en"
-
 def listModules(languageCode:str) -> list:
     if not os.path.exists(os.path.join("languages", languageCode)): return []
     return [f[:-5] for f in os.listdir(os.path.join("languages", languageCode)) if f.endswith(".json")]

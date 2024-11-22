@@ -1,6 +1,7 @@
 import discord
-from game import Game, GAMES
+from game import Game
 import datetime
+import config
 
 class SettingsModal(discord.ui.Modal):
     game:Game
@@ -35,6 +36,34 @@ class SettingsModal(discord.ui.Modal):
         except ValueError:
             await interaction.response.send_message("Invalid input.", ephemeral=True)
             return
+    
+    async def on_error(self, interaction, error):
+        return await super().on_error(interaction, error)
+
+    async def on_timeout(self, interaction:discord.Interaction):
+        await interaction.response.defer()
+
+class AssignmentModal(discord.ui.Modal):
+    game:Game
+    playerId:int
+    targetPlayerId:int
+    targetPlayerName:str
+
+    def __init__(self, game:Game, langModule:dict, playerId:int, targetPlayerId:int, targetPlayerName:str):
+        self.game = game
+        self.playerId = playerId
+        self.targetPlayerId = targetPlayerId
+        self.targetPlayerName = targetPlayerName
+
+        self.identity = discord.ui.TextInput(label=langModule["assigningPhase"]["modal"]["fields"]["identity"]["label"], placeholder=langModule["assigningPhase"]["modal"]["fields"]["identity"]["placeholder"].format(targetPlayerName), required=True, max_length=config.AssignmentModal.maxChars)
+
+        super().__init__(title=langModule["assigningPhase"]["modal"]["title"], timeout=None)
+
+        self.add_item(self.identity)
+
+    async def on_submit(self, interaction:discord.Interaction):
+        self.game.players[self.game.getPlayerIndex(self.targetPlayerId)].identity = self.identity.value
+        await interaction.response.send_message(embed=self.game.gameEmbed(), view=self.game.gameView(), ephemeral=True)
     
     async def on_error(self, interaction, error):
         return await super().on_error(interaction, error)
