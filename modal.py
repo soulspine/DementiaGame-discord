@@ -2,6 +2,7 @@ import discord
 from game import Game
 import datetime
 import config
+import language
 
 class SettingsModal(discord.ui.Modal):
     game:Game
@@ -48,12 +49,16 @@ class AssignmentModal(discord.ui.Modal):
     playerId:int
     targetPlayerId:int
 
-    def __init__(self, game:Game, langModule:dict, playerId:int, targetPlayerId:int, targetPlayerName:str):
+    def __init__(self, game:Game, playerId:int, targetPlayerId:int):
         self.game = game
         self.playerId = playerId
         self.targetPlayerId = targetPlayerId
+        langModule = language.getModule("game", self.game.languageCode)
 
-        self.identity = discord.ui.TextInput(label=langModule["assigningPhase"]["modal"]["fields"]["identity"]["label"], placeholder=langModule["assigningPhase"]["modal"]["fields"]["identity"]["placeholder"].format(targetPlayerName), required=True, max_length=config.AssignmentModal.maxChars)
+        targetPlayer = self.game.guild.get_member(self.targetPlayerId)
+        placeholder = targetPlayer.name if targetPlayer.display_name == targetPlayer.name else f"{targetPlayer.display_name} ({targetPlayer.name})"
+
+        self.identity = discord.ui.TextInput(label=langModule["assigningPhase"]["modal"]["fields"]["identity"]["label"], placeholder=langModule["assigningPhase"]["modal"]["fields"]["identity"]["placeholder"].format(placeholder), required=True, max_length=config.AssignmentModal.maxChars)
 
         super().__init__(title=langModule["assigningPhase"]["modal"]["title"], timeout=None)
 
@@ -63,10 +68,44 @@ class AssignmentModal(discord.ui.Modal):
         self.game.players[self.targetPlayerId].identity = self.identity.value
         if self.game.players[self.playerId].gameMsg is None:
             await interaction.response.send_message(embed=self.game.gameEmbed(self.playerId), view=self.game.gameView(self.playerId), ephemeral=True)
+            self.game.updateGameMessage()
             self.game.players[self.playerId].gameMsg = await interaction.original_response()
         else:
             await interaction.response.defer()
             self.game.updateGameMessage()
+
+    async def on_error(self, interaction, error):
+        return await super().on_error(interaction, error)
+
+    async def on_timeout(self, interaction:discord.Interaction):
+        await interaction.response.defer()
+
+class NoteModal(discord.ui.Modal):
+    game:Game
+    playerId:int
+
+    def __init__(self, game:Game, playerId:int):
+        self.game = game
+        self.playerId = playerId
+        langModule = language.getModule("game", self.game.languageCode)
+
+        player = self.game.guild.get_member(self.playerId)
+
+        self.question = discord.ui.TextInput(label=langModule["roundPhase"]["noteModal"]["fields"]["question"]["label"], required=True, max_length=config.NoteModal.Question.maxChars)
+        self.answer = discord.ui.TextInput(label=langModule["roundPhase"]["noteModal"]["fields"]["answer"]["label"], required=True, max_length=config.NoteModal.Note.maxChars)
+
+        super().__init__(title=langModule["roundPhase"]["noteModal"]["title"].format(player.display_name), timeout=None)
+
+        self.add_item(self.question)
+        self.add_item(self.answer)
+
+    async def on_submit(self, interaction:discord.Interaction):
+        question = self.question.value
+        answer = self.answer.value
+        self.game.players[self.playerId].addNote(question, answer)
+
+        await interaction.response.defer()
+        self.game.nextRound()
 
     async def on_error(self, interaction, error):
         return await super().on_error(interaction, error)

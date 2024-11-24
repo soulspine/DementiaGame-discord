@@ -1,14 +1,16 @@
 {
     "assigningPhase":{
         "title": "Faza przypisywania",
-        "description": "Przypiszcie innym tożsamości. Ty decydujesz kim będzie **{}**",
+        "description": "Przypiszcie innym tożsamości. Ty decydujesz kim będzie **{}**.\nGdy wszyscy potwierdzą gotowość, gra uruchomi się automatycznie.",
+        "allReady": "Wszyscy gracze są gotowi. Gra rozpocznie się {}",
         "fields":{
+            "ready": "Wszyscy gracze gotowi",
             "players": "Pacjenci"
         },
         "buttons":{
-            "confirm": "Potwierdź",
-            "cancel": "Anuluj",
-            "change": "Zmień"
+            "ready": "Gotowość",
+            "change": "Zmień",
+            "quit": "Zakończ"
         },
         "modal":{
             "title":"Przypisanie tożsamości",
@@ -16,6 +18,34 @@
                 "identity":{
                     "label": "Nowa tożsamość",
                     "placeholder": "Kim ma być {}?"
+                }
+            }
+        }
+    },
+    "roundPhase":{
+        "title": "Runda **{}**",
+        "descriptionPlayer": "Zadaj pytanie i zapisz notatkę lub zgadnij kim jesteś.",
+        "descriptionOthers": "Udziel odpowiedzi na pytanie aby pomóc im zgadnąć.",
+        "fields":{
+            "identity": "Tożsamość",
+            "notes": "Moje notatki",
+            "order": "Kolejność"
+        },
+        "buttons":{
+            "note": "Notatka",
+            "guess": "Zgadnij",
+            "leave": "Opuść",
+            "kick": "Wyrzuć",
+            "quit": "Zakończ"
+        },
+        "noteModal":{
+            "title":"Notatka",
+            "fields":{
+                "answer":{
+                    "label": "Odpowiedź"
+                },
+                "question":{
+                    "label": "Pytanie"
                 }
             }
         }

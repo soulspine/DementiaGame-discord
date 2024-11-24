@@ -1,14 +1,16 @@
 {
     "assigningPhase":{
         "title": "Assigning phase",
-        "description": "Assign identities to others. You decide who **{}** will be",
+        "description": "Assign identities to others. You decide who **{}** will be.\nWhen all players confirm readiness, the game will start automatically.",
+        "allReady": "All players are ready. The game will start {}",
         "fields":{
+            "ready": "All players ready",
             "players": "Patients"
         },
         "buttons":{
-            "confirm": "Confirm",
-            "cancel": "Cancel",
-            "change": "Change"
+            "ready": "Ready",
+            "change": "Change",
+            "quit": "Quit"
         },
         "modal":{
             "title":"Identity assignment",
@@ -16,6 +18,34 @@
                 "identity":{
                     "label": "New identity",
                     "placeholder": "Who should {} be?"
+                }
+            }
+        }
+    },
+    "roundPhase":{
+        "title": "Round **{}**",
+        "descriptionPlayer": "Ask a question and save a note or guess who you are.",
+        "descriptionOthers": "Answer the question to help them guess.",
+        "fields":{
+            "identity": "Identity",
+            "notes": "My notes",
+            "order": "Order"
+        },
+        "buttons":{
+            "note": "Note",
+            "guess": "Guess",
+            "leave": "Leave",
+            "kick": "Kick",
+            "quit": "Quit"
+        },
+        "noteModal":{
+            "title":"Note",
+            "fields":{
+                "answer":{
+                    "label": "Answer"
+                },
+                "question":{
+                    "label": "Question"
                 }
             }
         }

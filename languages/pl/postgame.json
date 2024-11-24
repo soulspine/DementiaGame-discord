@@ -1,7 +1,8 @@
 {
     "cancelField": "Powód anulowania",
     "cancelReasons":{
-        "byHost": "Gra anulowana przez gospodarza",
-        "timeout": "Gra anulowana z powodu braku aktywności"
+        "byHost": "Anulowana przez gospodarza.",
+        "timeout": "Anulowana z powodu braku aktywności.",
+        "voteQuit": "Anulowana przez głosowanie. Większość chciała zakończyć grę."
     }
 }

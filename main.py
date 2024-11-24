@@ -48,7 +48,7 @@ async def host(interaction:discord.Interaction, language_code:str=config.Languag
                 await error.gameOngoing(interaction, language_code); return
         
         gameId:int = interaction.user.voice.channel.id
-        GAMES[gameId] = Game(client, hostId=interaction.user.id, id=gameId, gamemode=interaction.data["values"][0], languageCode=language_code, vc=interaction.user.voice.channel, msg=interaction.message)
+        GAMES[gameId] = Game(client, interaction.guild, hostId=interaction.user.id, id=gameId, gamemode=interaction.data["values"][0], languageCode=language_code, vc=interaction.user.voice.channel, msg=interaction.message)
 
 
         embed = GAMES[gameId].lobbyEmbed()
@@ -100,18 +100,18 @@ async def info(interaction:discord.Interaction):
 
 async def backgroundCleaner():
     await client.wait_until_ready()
-    sleepTime = config.BackgroundCleaner.sleepTime  # seconds
     while not client.is_closed():
         for gameId, game in list(GAMES.items()):
+            #print(game.timeout)
             if game.timeout is None: continue
-            elif game.timeout.timestamp()-datetime.datetime.now().timestamp() < sleepTime:
+            elif game.timeout.timestamp()-datetime.datetime.now().timestamp() < config.BackgroundCleaner.sleepTime:
                 await game.cancel("timeout")
                 print(f"Game {gameId} timed out.")
-        await asyncio.sleep(sleepTime)
+        await asyncio.sleep(config.BackgroundCleaner.sleepTime)
 
 async def main():
     asyncio.create_task(backgroundCleaner())
     await client.start(token)
 
-#client.run(token)
-asyncio.run(main())
+client.run(token)
+#asyncio.run(main())

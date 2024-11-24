@@ -1,5 +1,5 @@
 class BackgroundCleaner:
-    sleepTime:int = 60  # seconds
+    sleepTime:int = 1  # seconds
 
 class Language:
     defaultCode:str = "en"
@@ -7,3 +7,11 @@ class Language:
 class AssignmentModal:
     maxChars:int = 32
 
+class NoteModal:
+    class Question:
+        maxChars:int = 32
+    class Note:
+        maxChars:int = 32
+
+class Game:
+    readyCountdown:int = 10  # seconds
